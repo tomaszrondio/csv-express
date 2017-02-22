@@ -12,23 +12,23 @@ A CSV response module for [Express](http://expressjs.com/). This is an up-to-dat
 
 ## Installation
 
-````
+````bash
     npm install csv-express
 ````
 
 ## API
 ### Methods
 
-#### res.csv([data] [, csvHeaders] [, responseHeaders] [, statusCode])
+#### res.csv(data [, csvHeaders] [, responseHeaders] [, statusCode])
 
-+ data (**required**) is an array of arrays or objects 
-+ csvHeaders (*optional*) is a Boolean for returning headers on the output CSV file. Default is false.
-+ responseHeaders (*optional*) are custom response headers
-+ statusCode (*optional*) is a custom response status code
++ data (**required**): an array of arrays or objects
++ csvHeaders (*optional*): a Boolean for returning headers on the output CSV file. Default is `false`.
++ responseHeaders (*optional*): object containing custom HTTP response headers
++ statusCode (*optional*): a custom HTTP response status code. Default is 200.
 
 ### Settings
-#### #separator 
-The delimiter to use, default is `','`. 
+#### #separator
+The delimiter to use, default is `','`.
 
 #### #preventCast
 Prevent Excels type casting, default is `false`.
@@ -40,29 +40,48 @@ Treat `null` and `undefined` values as empty strings in the output, default is `
 
 Example:
 
-````
-var express = require('express'),
-    csv = require('csv-express'),
-    app = express();
+````javascript
+var express = require('express')
+var csv = require('csv-express')
+var app = express()
 
+// Basic
 app.get('/', function(req, res) {
   res.csv([
     ["a", "b", "c"]
   , ["d", "e", "f"]
-  ]);
-});
+  ])
+})
 
-app.listen(3000);
+// Add headers
+app.get('/headers', function(req, res) {
+  res.csv([
+    {"a": 1, "b": 2, "c": 3},
+    {"a": 4, "b": 5, "c": 6}
+  ], true)
+})
+
+// Add response headers and status code (will throw a 500 error code)
+app.get('/all-params', function(req, res) {
+  res.csv([
+    {"a": 1, "b": 2, "c": 3},
+    {"a": 4, "b": 5, "c": 6}
+  ], true, {
+    "Access-Control-Allow-Origin": "*"
+  }, 500)
+})
+
+app.listen(3000)
 ````
 
 You can also pass an array of objects and optionally return a header row.
 Useful when working with the results from database queries using [node-mysql](https://github.com/felixge/node-mysql/) or [node-postgres](https://github.com/brianc/node-postgres).
 
-````
+````javascript
   res.csv([
       {"name": "Sam", "age": 1},
       {"name": "Mary": "age": 2}
-  ], true);
+  ], true)
 
   => name, age
      Sam, 1
@@ -99,3 +118,5 @@ The original license is as follows:
 
 All modifications from the original are CC0.
 
+## Support
+Development supported by NSF CAREER EAR-1150082 and NSF ICER-1440312
