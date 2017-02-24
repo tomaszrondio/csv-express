@@ -6,14 +6,15 @@ A CSV response module for [Express](http://expressjs.com/). This is an up-to-dat
 ## Changes from [express-csv](https://github.com/nulltask/express-csv)
 + Adds support for adding a header row to the CSV ([#16](https://github.com/nulltask/express-csv/pull/16))
 + Better escaping of numbers so that applications such as Excel properly recognize data types
-+ Actively maintained for use with more current versions of Express
++ Actively maintained for use Express 3 and 4
 + Up to date dependencies and tests
++ Support for different encodings ( [thanks alexcrack!](https://github.com/jczaplew/csv-express/pull/1) )
 
 
 ## Installation
 
 ````bash
-    npm install csv-express
+npm install csv-express
 ````
 
 ## API
