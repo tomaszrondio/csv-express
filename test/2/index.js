@@ -1,7 +1,8 @@
 var express = require('express'),
     request = require('superagent'),
-    csv = require('../'),
-    app = express();
+    should = require('should'),
+    csv = require('../../'),
+    app = express.createServer();
 
 app.get('/test/1', function(req, res) {
   res.csv([
@@ -20,6 +21,23 @@ app.get('/test/3', function(req, res) {
   res.csv([
     [ 'a', 'b', undefined ]
   ]);
+});
+
+app.get('/test/custom-headers', function(req, res) {
+  res.csv([
+    [ 'a', 'b', 'c' ]
+  ], false, {
+    'Access-Control-Allow-Origin': '*',
+    'X-Powered-By': 'Good vibes'
+  });
+});
+
+app.get('/test/status-code', function(req, res) {
+  res.csv([
+    [ 'a', 'b', undefined ]
+  ], false, {
+    'Access-Control-Allow-Origin': '*'
+  }, 500);
 });
 
 app.get('/test/objectArray', function(req, res) {
@@ -58,9 +76,6 @@ describe('csv-express', function() {
     csv.ignoreNullOrUndefined.should.be.type('boolean');
   });
 
-  it('should extend res.csv', function() {
-    require('express').response.csv.should.be.type('function');
-  });
 });
 
 describe('res.csv()', function() {
@@ -147,6 +162,25 @@ describe('res.csv()', function() {
         res.text.should.equal('="a",="b",="c"\r\n="d",="e",="f"\r\n');
         done();
       });
+  });
+
+  it('should return custom response headers', function(done) {
+    request
+      .get('http://127.0.0.1:8383/test/custom-headers')
+      .end(function(error, res) {
+        res.headers['access-control-allow-origin'].should.equal('*');
+        res.headers['x-powered-by'].should.equal('Good vibes');
+        done();
+      });
+  });
+
+  it('should return a custom error code', function(done) {
+    request
+      .get('http://127.0.0.1:8383/test/status-code')
+      .end(function(error, res) {
+        res.statusCode.should.equal(500);
+        done();
+      })
   });
 });
 
