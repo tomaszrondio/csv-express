@@ -23,6 +23,12 @@ app.get('/test/3', function(req, res) {
   ]);
 });
 
+app.get('/test/hexadecimal', function(req, res) {
+  res.csv([
+    ['0x0bea5f7a45740a05a96099e4f9b4a732dfe006', 'b']
+  ])
+})
+
 app.get('/test/custom-headers', function(req, res) {
   res.csv([
     [ 'a', 'b', 'c' ]
@@ -136,6 +142,15 @@ describe('res.csv()', function() {
       .end(function(error, res) {
         csv.ignoreNullOrUndefined = prevOption;
         res.text.should.equal('"a","b","undefined"\r\n');
+        done();
+      });
+  });
+
+  it('should response correct hexadecimal', function(done) {
+    request
+      .get('http://127.0.0.1:8383/test/hexadecimal')
+      .end(function(error, res) {
+        res.text.should.equal('"0x0bea5f7a45740a05a96099e4f9b4a732dfe006","b"\r\n');
         done();
       });
   });
