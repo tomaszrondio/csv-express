@@ -66,6 +66,14 @@ app.get('/test/cyrillic/cp1251', function(req, res) {
   ]);
 });
 
+app.get('/test/separator', function(req, res) {
+  csv.separator = '|'
+  res.csv([
+    { foo: "a", bar: 1 },
+    { foo: "b", bar: 2}
+  ], true);
+});
+
 app.listen(8383);
 
 describe('csv-express', function() {
@@ -280,6 +288,23 @@ describe('when given cyrillyc data', function() {
       .end(function(error, res) {
         var text = new Buffer([0x22, 0xcf, 0xf0, 0xe8, 0xe2, 0xe5, 0xf2, 0x22, 0x2c, 0x22, 0xcc, 0xe8, 0xf0, 0x22, 0x0d, 0x0a]);
         res.text.should.equal(text.toString());
+        done();
+      });
+  });
+});
+
+describe('when pipe-delimited', function() {
+  it('should output a pipe-delimited file', function(done) {
+    request
+      .get('http://127.0.0.1:8383/test/separator')
+      .end(function(error, res) {
+        var responseBody = res.text.split('\r\n')
+        var rows = responseBody.map(function(row) {
+          return row.split('|')
+        })
+        // Make sure the header row uses the provided delimeter
+        rows[0].length.should.equal(2)
+        rows[0][0].should.equal('foo')
         done();
       });
   });
